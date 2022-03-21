@@ -2,10 +2,7 @@ package pdf_epub_provider.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pdf_epub_provider.service.MulEpubService;
 import pdf_epub_provider.service.UserInfoService;
@@ -19,6 +16,7 @@ import java.io.IOException;
  */
 @Slf4j
 @RestController
+@CrossOrigin
 @RequestMapping("/PdfToEpub")
 public class MulPdfController {
     @Autowired
@@ -28,28 +26,30 @@ public class MulPdfController {
     UserInfoService userInfoService;
 
     @PostMapping("/upload/many")
-    public String httpUploads(@RequestParam("uploadFile") MultipartFile[] uploadFiles, String username){
+    public String httpUploads(@RequestParam("uploadFiles") MultipartFile[] uploadFiles, String username) {
         String msg;
         try {
-            msg=mulEpubService.MergePdfToEpub(uploadFiles,username);
+            msg = mulEpubService.MergePdfToEpub(uploadFiles, username);
         } catch (IOException e) {
             log.error("无法创建上传的文件！");
-            msg="error";
+            msg = "error";
             e.printStackTrace();
             return msg;
         }
-        log.info("用户："+username+"成功批量上传了"+uploadFiles.length+"个文件："+showUploadFilesName(uploadFiles));
+        log.info("用户：" + username + "成功批量上传了" + uploadFiles.length + "个文件：" + showUploadFilesName(uploadFiles));
         return msg;
     }
 
     public String showUploadFilesName(MultipartFile[] uploadFiles) {
         String uploadFilesName = "";
         for (int i = 0; i < uploadFiles.length; i++) {
-            if (i != uploadFiles.length-1) uploadFilesName += uploadFiles[i].getOriginalFilename() + "、";
-            else uploadFilesName += uploadFiles[i].getOriginalFilename();
+            if (i != uploadFiles.length - 1) {
+                uploadFilesName += uploadFiles[i].getOriginalFilename() + "、";
+            } else {
+                uploadFilesName += uploadFiles[i].getOriginalFilename();
+            }
         }
         return uploadFilesName;
     }
-
 
 }

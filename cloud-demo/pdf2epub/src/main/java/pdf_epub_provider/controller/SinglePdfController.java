@@ -17,6 +17,7 @@ import java.net.URLEncoder;
  */
 @Slf4j
 @RestController
+@CrossOrigin
 @RequestMapping("/PdfToEpub")
 public class SinglePdfController {
 
@@ -32,26 +33,32 @@ public class SinglePdfController {
      * @return 返回文件名
      */
     @PostMapping("/upload/one")
-    @ResponseBody
     public String httpUpload(@RequestParam("pdfFile") MultipartFile pdfFile,
                              @RequestParam("username") String username){
         String msg;
         try {
-            msg=singleEpubService.pdfToEpub_Single(pdfFile,username);
+            msg = singleEpubService.pdfToEpub_Single(pdfFile, username);
         } catch (IOException e) {
             log.error("无法创建上传的文件！");
-            msg="error";
+            msg = "error";
             e.printStackTrace();
         }
-        log.info("用户："+username+"成功上传了文件："+pdfFile.getOriginalFilename());
+        log.info("用户：" + username + "成功上传了文件：" + pdfFile.getOriginalFilename());
         return msg;
     }
 
+    /**
+     * 下载接受单个文件下载
+     *
+     * @param path     下载文件路径
+     * @param username 用户名
+     * @return 返回是否完成
+     */
     @PostMapping("/download/one")
     public String httpDownload(String path, String username, HttpServletResponse response) {
         try {
-            if(!userInfoService.isPathValid(path,username)){
-                log.warn("有人试图通过不合法的请求下载！请求用户："+username+" 想要下载路径"+path);
+            if (!userInfoService.isPathValid(path, username)) {
+                log.warn("有人试图通过不合法的请求下载！请求用户：" + username + " 想要下载路径" + path);
                 return "error_Download01";
             }
             // path是指想要下载的文件的路径
@@ -70,7 +77,7 @@ public class SinglePdfController {
             response.setCharacterEncoding("UTF-8");
             //Content-Disposition的作用：告知浏览器以何种方式显示响应返回的文件，用浏览器打开还是以附件的形式下载到本地保存
             //attachment表示以附件方式下载   inline表示在线打开   "Content-Disposition: inline; filename=文件名.mp3"
-            // filename表示文件的默认名称，因为网络传输只支持URL编码的相关支付，因此需要将文件名URL编码后进行传输,前端收到后需要反编码才能获取到真正的名称
+            //filename表示文件的默认名称，因为网络传输只支持URL编码的相关支付，因此需要将文件名URL编码后进行传输,前端收到后需要反编码才能获取到真正的名称
             response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
             // 告知浏览器文件的大小
             response.addHeader("Content-Length", "" + file.length());
