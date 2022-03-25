@@ -40,5 +40,7 @@ com:
 logging:
   level:
     cn.itcast: debug
+    com.zjw.pdf_epub_provider.dao: trace
   pattern:
     dateformat: MM-dd HH:mm:ss:SSS
+  config: classpath:logback-spring.xml
